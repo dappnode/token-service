@@ -1,0 +1,17 @@
+{
+  "name": "token-service",
+  "version": "1.0.0",
+  "description": "Service to provide tokens to DAppNode",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc": "tsc"
+  },
+  "author": "vdo@dappnode.io",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^4.17.2",
+    "express": "^4.17.1",
+    "typescript": "^3.7.3"
+  }
+}
