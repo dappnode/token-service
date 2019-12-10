@@ -11,6 +11,6 @@
     "types": ["node"],
     "outDir": "dist"
   },
-  "include": ["api/**/*"],
+  "include": ["**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
 }

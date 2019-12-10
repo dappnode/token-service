@@ -11,6 +11,8 @@ const config =  {
     
     web3_provider: process.env.WEB3_PROVIDER || "",
     token_regex: process.env.TOKEN_REGEX || "^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*:[A-Za-z0-9]{94}$",
+    limit_rate: process.env.API_LIMIT_RATE || 5,
+    limit_window: process.env.API_LIMIT_WINDOW || 10
 
 };
 

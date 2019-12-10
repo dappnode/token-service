@@ -1,6 +1,8 @@
 import express from 'express';
-
-const rateLimit = require('express-rate-limit');
+import { Request } from 'express-serve-static-core';
+import rateLimit from 'express-rate-limit';
+import checkSignature from './utils/checkSignature';
+import getBalance from './utils/getBalance';
 
 // Load configuration
 const config = require('./config');
@@ -18,25 +20,35 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.get('/tokenrequest',  function (req, res) {
+app.get('/tokenrequest/:signature',  async function (req, res) {
 
-    // Check signature 
+    const { signature } = req.params;
 
-    // Check if Address is present in 'delivered'
+    const address = checkSignature(signature);
+    if (!address) {
+        return res.status(400).send("Failed to verify signature.");
+    }
 
-    // If not present take a token from pool and add it to delivered 
+    const balance: number | null = await getBalance(address);
+    if (! balance) {
+        return res.status(400).send(`Error getting balance of: ${address}`);
+    }
+    if (balance <= 0) {
+        return res.status(400).send("Address without NFT balance.");
+    }
 
+    //const token: string | null = await getToken(address);
 
-    // res.status(200).send(req.ip)
+    //res.status(200).send(token);
 });
 
 // Middleware to return JSON header
-app.use('/',function (req, res, next) {
+app.use('/',function (req: Request, res, next) {
     res.header('Content-Type', 'application/json');
     next();
 });
 
-app.listen(config.server.port, (err) => {
+app.listen(config.server.port, (err: Error) => {
     if (err) {
 		console.error(err.message);
 		process.exit(1);
