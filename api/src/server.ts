@@ -19,6 +19,14 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.get('/tokenrequest',  function (req, res) {
+
+    // Check signature 
+
+    // Check if Address is present in 'delivered'
+
+    // If not present take a token from pool and add it to delivered 
+
+
     // res.status(200).send(req.ip)
 });
 
