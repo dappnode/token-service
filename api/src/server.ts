@@ -16,15 +16,15 @@ app.enable("trust proxy");
 
 // Apply the rate limit to all requests
 const limiter = rateLimit({
-  windowMs: parseInt(config.limit_window) * 60 * 1000,
-  max: parseInt(config.limit_rate),
+  max: parseInt(config.limit_rate, 10),
   message: JSON.stringify({
     message: `Too many requests from this IP, please try again after ${config.limit_window} minutes.`
-  })
+  }),
+  windowMs: parseInt(config.limit_window, 10) * 60 * 1000
 });
 app.use(limiter);
 
-app.get("/tokenrequest/:signature", async function(req, res) {
+app.get("/tokenrequest/:signature", async (req, res) => {
   try {
     const { signature } = req.params;
     const address = checkSignature(signature);
@@ -35,7 +35,9 @@ app.get("/tokenrequest/:signature", async function(req, res) {
     const token: string = await getToken(address);
     res.status(200).send(token);
   } catch (e) {
-    if (!(e instanceof ExpectedError)) console.log(e.stack);
+    if (!(e instanceof ExpectedError)) {
+      console.log(e.stack);
+    }
     res.status(400).send(e.message);
   }
 });

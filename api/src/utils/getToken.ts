@@ -16,9 +16,9 @@ export default function getToken(address: string): string {
     return deliveredToFind[address];
   }
 
-  let pool: string[] = db.get("pool").value();
+  const pool: string[] = db.get("pool").value();
 
-  if (pool.length == 0) {
+  if (pool.length === 0) {
     throw new Error("The token pool is empty");
   }
   const deliveredToken: string = pool.pop() || "";
