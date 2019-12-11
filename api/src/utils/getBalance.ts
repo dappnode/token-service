@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
 
 ethers.errors.setLogLevel("error");
-const abi = require("../abi/nft.json");
+
+import * as abi from "../abi/nft.json";
 
 export default async function getBalance(address: string): Promise<number> {
   const provider = new ethers.providers.JsonRpcProvider(config.web3_provider);

@@ -1,11 +1,20 @@
-FROM node:10.11.0-alpine
+# build layer
 
-RUN apk add --no-cache git python build-base bind-tools bash
-
+FROM node:10.15.3-alpine as build
 WORKDIR /usr/src/app
+COPY src/package.json src/yarn.lock ./
+RUN yarn install --production
+COPY src .
+RUN yarn build
 
-ADD src .
+# Final layer
 
-RUN npm install --production
+FROM alpine
+WORKDIR /usr/src/app
+RUN apk add --update nodejs
 
-CMD ["node","server.js"]
+COPY --from=build /usr/src/app/dist /usr/src/app
+COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
+
+CMD [ "node", "/usr/src/app/server.js" ]
+
