@@ -3,22 +3,25 @@ import FileSync from "lowdb/adapters/FileSync";
 
 const dbPAth = "./db.json";
 
-// TODO: Create path if missing:
 const adapter = new FileSync(dbPAth);
-const db = low(adapter);
+
 
 type DeliveredMap = { [address: string]: string };
 
+// Initial empty db
+// db.defaults({ delivered: {},pool: []}).write();
+
 export default function getToken(address: string): string {
+  const db = low(adapter);
   const deliveredToFind: DeliveredMap = db.get("delivered").value();
 
-  if (deliveredToFind[address]) {
+  if (deliveredToFind && deliveredToFind[address]) {
     return deliveredToFind[address];
   }
 
-  const pool: string[] = db.get("pool").value();
+  const pool = db.get('pool').value();
 
-  if (pool.length === 0) {
+  if (db.get('pool').size().value() === 0) {
     throw new Error("The token pool is empty");
   }
   const deliveredToken: string = pool.pop() || "";

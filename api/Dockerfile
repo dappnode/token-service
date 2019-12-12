@@ -1,4 +1,4 @@
-# build layer
+# Build layer
 
 FROM node:10.15.3-alpine as build
 WORKDIR /usr/src/app
@@ -13,6 +13,7 @@ FROM alpine
 WORKDIR /usr/src/app
 RUN apk add --update nodejs
 
+COPY --from=build /usr/src/app/db.json /usr/src/app
 COPY --from=build /usr/src/app/dist /usr/src/app
 COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 

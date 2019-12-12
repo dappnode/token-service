@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+const config = require("../config");
 
 export default function checkSignature(signature: string): string {
   const fullMessage =
@@ -12,6 +13,8 @@ export default function checkSignature(signature: string): string {
       signature
     );
   } catch (err) {
+    //console.log("sig:", signature)
+    console.log(err);
     throw Error("Error trying to get address from signature:");
   }
 }

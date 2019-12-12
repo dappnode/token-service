@@ -24,10 +24,13 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.get("/tokenrequest/:signature", async (req, res) => {
+app.get("/tokenrequest", async (req, res) => {
   try {
-    const { signature } = req.params;
-    const address = checkSignature(signature);
+    const sigparam = req.query.signature;
+    if (!sigparam) {
+      throw new ExpectedError("Please provide a signature.");
+    }
+    const address = checkSignature(sigparam);
     const balance = await getBalance(address);
     if (balance <= 0) {
       throw new ExpectedError("Address without NFT balance.");
