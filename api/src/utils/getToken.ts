@@ -5,7 +5,6 @@ const dbPAth = "./db.json";
 
 const adapter = new FileSync(dbPAth);
 
-
 type DeliveredMap = { [address: string]: string };
 
 // Initial empty db
@@ -19,9 +18,14 @@ export default function getToken(address: string): string {
     return deliveredToFind[address];
   }
 
-  const pool = db.get('pool').value();
+  const pool = db.get("pool").value();
 
-  if (db.get('pool').size().value() === 0) {
+  if (
+    db
+      .get("pool")
+      .size()
+      .value() === 0
+  ) {
     throw new Error("The token pool is empty");
   }
   const deliveredToken: string = pool.pop() || "";

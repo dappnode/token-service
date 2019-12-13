@@ -19,5 +19,8 @@
     "express-rate-limit": "^5.0.0",
     "lowdb": "^1.0.0",
     "typescript": "^3.7.3"
+  },
+  "prettier": {
+    "printWidth": 120
   }
 }

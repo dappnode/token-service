@@ -1,5 +1,7 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
+
+import addToken from "./utils/addToken";
 import checkSignature from "./utils/checkSignature";
 import getBalance from "./utils/getBalance";
 import getToken from "./utils/getToken";
@@ -24,7 +26,7 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-app.get("/tokenrequest", async (req, res) => {
+app.get("/gettoken", async (req, res) => {
   try {
     const sigparam = req.query.signature;
     if (!sigparam) {
@@ -35,8 +37,22 @@ app.get("/tokenrequest", async (req, res) => {
     if (balance <= 0) {
       throw new ExpectedError("Address without NFT balance.");
     }
-    const token: string = await getToken(address);
+    const token = getToken(address);
     res.status(200).send(token);
+  } catch (e) {
+    if (!(e instanceof ExpectedError)) {
+      console.log(e.stack);
+    }
+    res.status(400).send(e.message);
+  }
+});
+
+app.get("/addtoken", (req, res) => {
+  try {
+    const tokenparam = req.query.token;
+    const secretparam = req.query.secret;
+    addToken(tokenparam, secretparam);
+    res.status(200).send("Token added successfully");
   } catch (e) {
     if (!(e instanceof ExpectedError)) {
       console.log(e.stack);
