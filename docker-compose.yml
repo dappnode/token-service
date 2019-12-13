@@ -13,6 +13,8 @@ services:
       - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=token.dappnode.io
       - LETSENCRYPT_EMAIL=info@dappnode.io
+    volumes:
+      - "token-db:/usr/src/app/db.json"
 
   nginx:
     image: nginx
@@ -51,6 +53,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
 volumes:
+  token-db:
   nginx-config:
   nginx-certs:
   nginx-vhosts:
