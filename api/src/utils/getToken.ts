@@ -20,14 +20,6 @@ export default function getToken(address: string): string {
 
   const pool = db.get("pool").value();
 
-  if (
-    db
-      .get("pool")
-      .size()
-      .value() === 0
-  ) {
-    throw new Error("The token pool is empty");
-  }
   const deliveredToken: string = pool.pop() || "";
 
   // Save pool without the token taken
@@ -36,6 +28,5 @@ export default function getToken(address: string): string {
   // Insert new address to the delivered map
   deliveredToFind[address] = deliveredToken;
   db.set("delivered", deliveredToFind).write();
-
   return deliveredToken;
 }

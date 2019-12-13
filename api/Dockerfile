@@ -11,11 +11,11 @@ RUN yarn build
 
 FROM alpine
 WORKDIR /usr/src/app
-RUN apk add --update nodejs
+RUN apk add --update nodejs tini
 
 COPY --from=build /usr/src/app/db.json /usr/src/app
 COPY --from=build /usr/src/app/dist /usr/src/app
 COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
-
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD [ "node", "/usr/src/app/server.js" ]
 

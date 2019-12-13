@@ -6,10 +6,7 @@ import abi from "../abi/nft.json";
 
 const config = require("../config");
 
-export default async function getBalance(address: string): Promise<number> {
-  const provider = new ethers.providers.JsonRpcProvider(config.web3_provider);
-  console.log(`Web3 connected (ethers ${ethers.version}): ${config.web3_provider}`);
-
+export default async function getBalance(address: string, provider: ethers.providers.JsonRpcProvider): Promise<number> {
   let contract: ethers.Contract = new ethers.Contract(config.nft_contract, abi, provider);
   try {
     return contract.balanceOf(address);

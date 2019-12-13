@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import express from "express";
 import rateLimit from "express-rate-limit";
 
@@ -5,6 +6,7 @@ import addToken from "./utils/addToken";
 import checkSignature from "./utils/checkSignature";
 import getBalance from "./utils/getBalance";
 import getToken from "./utils/getToken";
+import logs from "./logs";
 
 // Load configuration
 const config = require("./config");
@@ -16,7 +18,11 @@ const app = express();
 // Trust NGINX proxy
 app.enable("trust proxy");
 
-// Apply the rate limit to all requests
+// Connect to Web3 provider
+const provider = new ethers.providers.JsonRpcProvider(config.web3_provider);
+logs.info(`Web3 connected (ethers ${ethers.version}): ${config.web3_provider}`);
+
+// Apply the rate limit to /gettoken
 const limiter = rateLimit({
   max: parseInt(config.limit_rate, 10),
   message: JSON.stringify({
@@ -24,7 +30,7 @@ const limiter = rateLimit({
   }),
   windowMs: parseInt(config.limit_window, 10) * 60 * 1000
 });
-app.use(limiter);
+app.use("/gettoken/", limiter);
 
 app.get("/gettoken", async (req, res) => {
   try {
@@ -33,15 +39,19 @@ app.get("/gettoken", async (req, res) => {
       throw new ExpectedError("Please provide a signature.");
     }
     const address = checkSignature(sigparam);
-    const balance = await getBalance(address);
+    const balance = await getBalance(address, provider);
     if (balance <= 0) {
       throw new ExpectedError("Address without NFT balance.");
     }
     const token = getToken(address);
+    if (token === "") {
+      throw new ExpectedError("The token pool is empty.");
+    }
+    logs.info(`Token ${token} delivered to ${address}.`);
     res.status(200).send(token);
   } catch (e) {
     if (!(e instanceof ExpectedError)) {
-      console.log(e.stack);
+      logs.error(e.stack);
     }
     res.status(400).send(e.message);
   }
@@ -52,10 +62,11 @@ app.get("/addtoken", (req, res) => {
     const tokenparam = req.query.token;
     const secretparam = req.query.secret;
     addToken(tokenparam, secretparam);
+    logs.info(`Token added to pool:  ${tokenparam}`);
     res.status(200).send("Token added successfully");
   } catch (e) {
-    if (!(e instanceof ExpectedError)) {
-      console.log(e.stack);
+    if (!e.message.includes("Token already exists in pool.") || e.message.includes("Invalid secret provided.")) {
+      logs.error(e.stack);
     }
     res.status(400).send(e.message);
   }
@@ -69,8 +80,8 @@ app.get("/addtoken", (req, res) => {
 
 app.listen(config.server.port, (err: Error) => {
   if (err) {
-    console.error(err.message);
+    logs.error(err.message);
     process.exit(1);
   }
-  console.log(`Running on port ${config.server.port}...`);
+  logs.info(`Running on port ${config.server.port}...`);
 });
