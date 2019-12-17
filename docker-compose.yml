@@ -6,11 +6,11 @@ services:
     build: ./api
     container_name: token-api
     expose:
-      - 8080
+      - 3000
     environment:
       - VIRTUAL_HOST=token.dappnode.io
       - VIRTUAL_NETWORK=nginx-proxy
-      - VIRTUAL_PORT=8080
+      - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=token.dappnode.io
       - LETSENCRYPT_EMAIL=info@dappnode.io
     volumes:
@@ -18,7 +18,7 @@ services:
 
   nginx:
     image: nginx
-    container_name: token-nginx
+    container_name: nginx
     ports:
       - "80:80"
       - "443:443"
